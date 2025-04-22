@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Detection Results</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary-color: #8BC34A;
+            --text-color: #333;
+            --light-bg: #f9fcf7;
+            --error-color: #f44336;
+            --warning-color: #FF9800;
+            --success-color: #4CAF50;
+            --info-color: #2196F3;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+        }
+        
+        .result-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .result-image {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .result-image img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-details {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .result-summary {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-summary i {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .healthy {
+            background-color: #E8F5E9;
+            color: var(--success-color);
+            border-left: 5px solid var(--success-color);
+        }
+        
+        .infected {
+            background-color: #FFEBEE;
+            color: var(--error-color);
+            border-left: 5px solid var(--error-color);
+        }
+        
+        .confidence-bar-container {
+            margin: 20px 0;
+            background-color: #eee;
+            border-radius: 50px;
+            height: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .confidence-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border-radius: 50px;
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            transition: width 1.5s ease-in-out;
+        }
+        
+        .confidence-text {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .info-box {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #F5F5F5;
+            border-left: 5px solid var(--info-color);
+        }
+        
+        .info-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--info-color);
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .treatment-box {
+            background-color: #FFF8E1;
+            border-left: 5px solid var(--warning-color);
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .treatment-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--warning-color);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .result-container {
+                flex-direction: column;
+            }
+            
+            .result-image, .result-details {
+                min-width: 100%;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 1s;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">Crop Disease Detection</h1>
+            <p class="subtitle animate__animated animate__fadeInUp">Analysis Results</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="card animate__animated animate__fadeInUp">
+            <h2 class="card-title">
+                {% if infected %}
+                <i class="fas fa-exclamation-triangle" style="color: var(--error-color);"></i> 
+                {% else %}
+                <i class="fas fa-check-circle" style="color: var(--success-color);"></i> 
+                {% endif %}
+                Results for {{ plant }}
+            </h2>
+            
+            <div class="result-container">
+                <div class="result-image animate__animated animate__fadeIn">
+                    <img src="data:image/jpeg;base64,{{ image }}" alt="Analyzed plant image">
+                </div>
+                
+                <div class="result-details">
+                    <div class="result-summary {% if infected %}infected{% else %}healthy{% endif %} animate__animated animate__fadeIn">
+                        {% if infected %}
+                        <i class="fas fa-bug"></i>
+                        <div>
+                            <strong>Diagnosis:</strong> Infected with {{ disease }}
+                        </div>
+                        {% else %}
+                        <i class="fas fa-heart"></i>
+                        <div>
+                            <strong>Diagnosis:</strong> Healthy plant detected
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="confidence-bar-container animate__animated animate__fadeIn animate__delay-1s">
+                        <div class="confidence-bar" id="confidence-bar"></div>
+                    </div>
+                    <div class="confidence-text animate__animated animate__fadeIn animate__delay-1s">
+                        Model Confidence: <span id="confidence-value">0</span>%
+                    </div>
+                    
+                    <div class="info-box animate__animated animate__fadeIn animate__delay-1s">
+                        <h3><i class="fas fa-info-circle"></i> Description</h3>
+                        <p>{{ description }}</p>
+                    </div>
+                    
+                    <div class="treatment-box animate__animated animate__fadeIn animate__delay-1s">
+                        <h3><i class="fas fa-medkit"></i> Treatment & Management</h3>
+                        <p>{{ treatment }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <a href="{{ url_for('upload_file') }}" class="btn">
+                    <i class="fas fa-arrow-left"></i> Analyze Another Image
+                </a>
+                <button class="btn" id="save-results" onclick="window.print()">
+                    <i class="fas fa-download"></i> Save Results
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2025 Crop Disease Detection System | Powered by TensorFlow</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Animate confidence bar when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const confidenceBar = document.getElementById('confidence-bar');
+            const confidenceValue = document.getElementById('confidence-value');
+            const confidence = {{ confidence }};
+            
+            setTimeout(function() {
+                confidenceBar.style.width = confidence + '%';
+                
+                // Animate the confidence value counter
+                let currentValue = 0;
+                const timer = setInterval(function() {
+                    if (currentValue >= confidence) {
+                        clearInterval(timer);
+                        confidenceValue.textContent = confidence.toFixed(1);
+                    } else {
+                        currentValue += confidence / 50;
+                        confidenceValue.textContent = Math.min(confidence, currentValue).toFixed(1);
+                    }
+                }, 30);
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Disease Detection</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary-color: #8BC34A;
+            --text-color: #333;
+            --light-bg: #f9fcf7;
+            --error-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        .card-content {
+            margin-bottom: 20px;
+        }
+        
+        .file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            border: 3px dashed #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f7ed;
+        }
+        
+        .file-upload i {
+            font-size: 60px;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .file-upload-text {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .file-upload input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-upload {
+            width: 100%;
+            max-width: 200px;
+        }
+        
+        .info-section {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .info-card {
+            flex: 1;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-card h3 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .info-card i {
+            margin-right: 8px;
+            color: var(--secondary-color);
+        }
+        
+        .flash {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .flash.error {
+            background-color: #ffebee;
+            color: var(--error-color);
+            border-left: 5px solid var(--error-color);
+        }
+        
+        .selected-file-name {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+            display: none;
+        }
+        
+        .preview-container {
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .info-section {
+                flex-direction: column;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .file-upload {
+                padding: 20px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">Crop Disease Detection</h1>
+            <p class="subtitle animate__animated animate__fadeInUp">Identify plant diseases in seconds with AI</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        <i class="fas fa-exclamation-circle"></i> {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% if model_error %}
+            <div class="flash error">
+                <i class="fas fa-exclamation-triangle"></i> The disease detection model could not be loaded. The system is currently unavailable.
+            </div>
+        {% endif %}
+        
+        <div class="card animate__animated animate__fadeInUp">
+            <h2 class="card-title"><i class="fas fa-leaf"></i> Upload Plant Image</h2>
+            <div class="card-content">
+                <p>Upload a clear image of a plant leaf to detect if it's infected or healthy, and identify the disease if present.</p>
+                <p>Supported crops: Apple, Corn, Grape, Potato, and Tomato.</p>
+            </div>
+            
+            <form method="POST" enctype="multipart/form-data" id="upload-form">
+                <div class="file-upload" id="drop-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p class="file-upload-text">Drag & drop your image here</p>
+                    <p>or</p>
+                    <input type="file" name="file" id="file-input" accept="image/*">
+                    <p class="selected-file-name" id="file-name"></p>
+                </div>
+                
+                <div class="preview-container" id="preview-container">
+                    <img src="" alt="Image preview" class="image-preview" id="image-preview">
+                </div>
+                
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-upload">
+                        <i class="fas fa-search"></i> Analyze Image
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="info-section animate__animated animate__fadeInUp animate__delay-1s">
+            <div class="info-card">
+                <h3><i class="fas fa-check-circle"></i> Supported Plants</h3>
+                <p>Our system can detect diseases in:</p>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>Apple</li>
+                    <li>Corn (Maize)</li>
+                    <li>Grape</li>
+                    <li>Potato</li>
+                    <li>Tomato</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h3><i class="fas fa-info-circle"></i> How It Works</h3>
+                <p>This tool uses a deep learning model trained on thousands of plant leaf images to detect diseases with high accuracy.</p>
+                <p style="margin-top: 10px;">For best results, ensure your image is:</p>
+                <ul style="margin-left: 25px; margin-top: 5px;">
+                    <li>Well-lit and clear</li>
+                    <li>Shows the leaf symptoms clearly</li>
+                    <li>Focused on a single leaf</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2025 Crop Disease Detection System | Powered by TensorFlow</p>
+        </div>
+    </footer>
+    
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const fileName = document.getElementById('file-name');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const dropArea = document.getElementById('drop-area');
+        
+        // Handle file selection
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                fileName.textContent = file.name;
+                fileName.style.display = 'block';
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        // Highlight drop area when dragging over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        // Handle dropped files
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        function highlight() {
+            dropArea.classList.add('highlight');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('highlight');
+        }
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files && files[0]) {
+                fileInput.files = files;
+                
+                // Trigger change event manually
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        }
+    </script>
+</body>
+</html>
